@@ -54,21 +54,23 @@ const Dashboard: React.FC = () => {
               <p>Entradas</p>
               <img src={income} alt="Income" />
             </header>
-            <h1 data-testid="balance-income">{`R$ ${balance.income}`}</h1>
+            <h1 data-testid="balance-income">{formatValue(+balance.income)}</h1>
           </Card>
           <Card>
             <header>
               <p>Saídas</p>
               <img src={outcome} alt="Outcome" />
             </header>
-            <h1 data-testid="balance-outcome">{`R$ ${balance.outcome}`}</h1>
+            <h1 data-testid="balance-outcome">
+              {formatValue(+balance.outcome)}
+            </h1>
           </Card>
           <Card total>
             <header>
               <p>Total</p>
               <img src={total} alt="Total" />
             </header>
-            <h1 data-testid="balance-total">{`R$ ${balance.total}`}</h1>
+            <h1 data-testid="balance-total">{formatValue(+balance.total)}</h1>
           </Card>
         </CardContainer>
 
@@ -84,14 +86,28 @@ const Dashboard: React.FC = () => {
             </thead>
 
             <tbody>
-              {transactions.map(transaction => (
-                <tr key={transaction.id}>
-                  <td className="title">{transaction.title}</td>
-                  <td className="income">{`R$ ${transaction.value}`}</td>
-                  <td>{transaction.category.title}</td>
-                  <td>{transaction.created_at}</td>
-                </tr>
-              ))}
+              {transactions.map(transaction => {
+                const date = new Date(transaction.created_at);
+                const formatedDate = date.toLocaleDateString('pt-br');
+
+                return (
+                  <tr key={transaction.id}>
+                    <td className="title">{transaction.title}</td>
+                    {transaction.type === 'income' ? (
+                      <td className="income">
+                        {formatValue(transaction.value)}
+                      </td>
+                    ) : (
+                        <td className="outcome">
+                          {`- ${formatValue(transaction.value)}`}
+                        </td>
+                      )}
+
+                    <td>{transaction.category.title}</td>
+                    <td>{formatedDate}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </TableContainer>
